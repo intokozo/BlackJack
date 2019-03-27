@@ -1,8 +1,8 @@
 class Gaming
   def initialize
     puts 'Вас приветствует игра Black Jack! Как вас зовут?'
-    name = gets.chomp.capitalize
-    puts "Приступим к игре, #{name}"
+    @name = gets.chomp.capitalize
+    puts "Приступим к игре, #{@name}"
     @dealer = Gamer.new
     @player = Gamer.new
     @cards = Cards.new
@@ -12,17 +12,15 @@ class Gaming
 
   def start
     loop do
-      @dealer.take_cards
-      @player.take_cards
       menu
-      puts "#{name}, хотите продолжить игру?"
+      puts "#{@name}, начнем?"
       puts '1 - да, 2 - нет'
       break if gets.chomp.to_i == 2
     end
   end
 
   def menu
-    puts "#{name}, что вы хотите делать?"
+    puts "#{@name}, что вы хотите делать?"
     puts 'Открыть карты - 1'
     puts 'Взять еще одну - 2'
     gets.chomp.to_i == 1 ? open_cards : player.take_cards(1)
@@ -44,12 +42,19 @@ class Gaming
 
   def open_cards
     puts 'У диллера на руках... суммой'
-    puts "У игрока #{name} на руках... суммой"
-    puts "Победил #{winner}, с суммой"
+    show_player_cards
+    puts "Победил игрок #{winner}, с суммой "
   end
 
-  def take_one
-    player.take_cards(1)
-    open_cards
+  def winning
+    @winner = @player.summ > @dealer.summ ? @name : 'диллер'
+  end
+
+  def show_player_cards
+    puts "У игрока #{@name} на руках #{@player.current_cards.join(", ")} суммой #{player.summ}"
+  end
+
+  def too_much(gamer)
+    gamer.summ = 0 if gamer.summ > 21
   end
 end
