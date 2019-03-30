@@ -26,7 +26,9 @@ class Gamer
   end
 
   def summ_card
+    a = @summ
     @current_cards.each_value { |x| @summ += x }
+    @summ -= a
     ace_miracle
   end
 
@@ -40,5 +42,17 @@ class Gamer
 
   def lose
     @bank -= 10
+  end
+
+  def bank_zero?
+    @bank.zero?
+  end
+
+  def deck_nil_zero?
+    @@cards.deck.nil? || @@cards.deck.size < 6
+  end
+
+  def renew_deck
+    @@cards = Cards.new if deck_nil_zero?
   end
 end

@@ -17,6 +17,7 @@ class Gaming
       puts '1 - да, 2 - нет'
       break if gets.chomp.to_i == 2
       @gamers.each(&:take_cards)
+      @player.renew_deck
       menu
     end
   end
@@ -29,6 +30,7 @@ class Gaming
     puts 'Открыть карты - 1'
     puts 'Взять еще одну - 2'
     @player.take_cards(1) if gets.chomp.to_i == 2
+    sleep(1)
     dealer_move
     open_cards
   end
@@ -46,16 +48,28 @@ class Gaming
   end
 
   def open_cards
+    sleep(1)
     @gamers.each { |x| show_player_cards(x) }
     @gamers.each { |x| too_much(x) }
     winning
-    puts "Победил игрок #{@winner}"
+    puts @winner.nil? ? 'Ничья' : "Победил игрок #{@winner}\n"
     report_bank
     @gamers.each(&:zeroing)
   end
 
   def winning
-    @winner = @player.summ > @dealer.summ ? @name : 'диллер'
+    @winner = if @player.summ > @dealer.summ
+                @name
+              elsif @player.summ < @dealer.summ
+                'диллер'
+              elsif @player.summ == @dealer.summ
+                nil
+              end
+    move_bank
+    end_lose
+  end
+
+  def move_bank
     case @winner
     when @name
       @dealer.lose
@@ -66,18 +80,31 @@ class Gaming
     end
   end
 
+  def end_lose
+    if @player.bank_zero?
+      puts "Игрок #{@name} проиграл."
+      sleep(5)
+      abort 'Спасибо за игру'
+    elsif @dealer.bank_zero?
+      puts "Игрок #{@name} победил!!"
+      sleep(5)
+      abort 'Спасибо за игру'
+    end
+  end
+
   def report_bank
     puts "У диллера #{@dealer.bank} долларов"
-    puts "У игрока #{@name} #{@player.bank} долларов"
+    puts "У игрока #{@name} #{@player.bank} долларов\n"
   end
 
   def show_player_cards(gamer)
+    @gamers.each(&:summ_card)
     naming = gamer == @dealer ? 'диллер' : @name
-    puts "У игрока #{naming} на руках #{gamer.current_cards.keys.join(', ')} суммой #{gamer.summ}"
+    puts "У игрока #{naming} на руках #{gamer.current_cards.keys.join(', ')} суммой #{gamer.summ}\n"
   end
 
   def show_dealer_stars
-    puts 'Карты диллера скрыты'
+    puts "Карты диллера скрыты\n"
   end
 
   def too_much(gamer)
