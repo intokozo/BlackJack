@@ -1,19 +1,20 @@
-class Cards
-  A = 1
-  J = 10
-  Q = 10
-  K = 10
-  CARD_SUITS = %w[♤ ♧ ♥ ♦].freeze
-  VALUE_CARDS = %w[2 3 4 5 6 7 8 9 10 A J Q K].freeze
+class Card
+  def initialize(suit, mean)
+    @suite = suit
+    @mean = mean
+  end
 
-  attr_reader :deck
+  def ace?
+    @mean == 'A'
+  end
 
-  def initialize
-    @deck = {}
-    i = 0
-    while i < 4
-      VALUE_CARDS.each { |x| @deck[x + CARD_SUITS[i]] = eval(x) }
-      i += 1
-    end
+  def name
+    @mean.to_s + @suite
+  end
+
+  def value
+    return @mean if @mean.is_a?(Integer)
+
+    ace? ? 1 : 10
   end
 end

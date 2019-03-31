@@ -3,10 +3,10 @@ class Gaming
 
   def initialize
     puts 'Игра Black Jack! Как вас зовут?'
-    @name = gets.chomp.capitalize
+    @player = Gamer.new(gets.chomp.capitalize)
+    @name = @player.name
     puts "Приветствую вас, #{@name}"
-    @dealer = Gamer.new
-    @player = Gamer.new
+    @dealer = Gamer.new('дилер')
     @gamers = [@dealer, @player]
     start
   end
@@ -37,7 +37,7 @@ class Gaming
 
   def dealer_move
     puts 'Дилер делает свой ход'
-    sleep(3)
+    sleep(1)
 
     if @dealer.summ < 17
       @dealer.take_cards(1)
@@ -83,24 +83,28 @@ class Gaming
   def end_lose
     if @player.bank_zero?
       puts "Игрок #{@name} проиграл."
-      sleep(5)
+      sleep(1)
       abort 'Спасибо за игру'
     elsif @dealer.bank_zero?
       puts "Игрок #{@name} победил!!"
-      sleep(5)
+      sleep(1)
       abort 'Спасибо за игру'
     end
   end
 
   def report_bank
-    puts "У диллера #{@dealer.bank} долларов"
-    puts "У игрока #{@name} #{@player.bank} долларов\n"
+    @gamers.each { |player| puts "У игрока #{player.name} #{player.bank} долларов\n" }
   end
 
   def show_player_cards(gamer)
     @gamers.each(&:summ_card)
-    naming = gamer == @dealer ? 'диллер' : @name
-    puts "У игрока #{naming} на руках #{gamer.current_cards.keys.join(', ')} суммой #{gamer.summ}\n"
+    puts "У игрока #{gamer.name} на руках #{cur_cards_names(gamer)} суммой #{gamer.summ}\n"
+  end
+
+  def cur_cards_names(player)
+    cards = []
+    player.current_cards.each { |card| cards << card.name }
+    cards.join(', ')
   end
 
   def show_dealer_stars

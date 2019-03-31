@@ -1,25 +1,26 @@
 class Gamer
-  attr_accessor :summ, :bank, :current_cards
+  attr_accessor :summ, :bank, :current_cards, :name
 
-  def initialize
+  def initialize(name)
     @bank = 100
-    @current_cards = {}
+    @current_cards = []
     @summ = 0
-    @@cards = Cards.new
+    @@cards = Deck.new
+    @name = name
   end
 
   def zeroing
-    @current_cards = {}
+    @current_cards = []
     @summ = 0
   end
 
   def take_cards(x = 2)
-    keys = @@cards.deck.keys
+    deck = @@cards.deck
 
     x.times do
-      random = keys[rand(keys.size)]
-      @current_cards.store(random, @@cards.deck[random])
-      @@cards.deck.delete(random)
+      random = deck[rand(deck.size)]
+      @current_cards << random
+      @@cards.remove_card(random)
     end
 
     summ_card
@@ -27,13 +28,13 @@ class Gamer
 
   def summ_card
     a = @summ
-    @current_cards.each_value { |x| @summ += x }
+    @current_cards.each { |card| @summ += card.value }
     @summ -= a
     ace_miracle
   end
 
   def ace_miracle
-    @summ += 10 if @current_cards.each_key { |x| x =~ /^A/ } && (@summ < 12)
+    @current_cards.none?(&:ace?) || @summ > 11 ? @summ : @summ + 10
   end
 
   def win
@@ -53,6 +54,6 @@ class Gamer
   end
 
   def renew_deck
-    @@cards = Cards.new if deck_nil_zero?
+    @@cards = Deck.new if deck_nil_zero?
   end
 end
