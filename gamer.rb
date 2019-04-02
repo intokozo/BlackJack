@@ -5,7 +5,6 @@ class Gamer
     @bank = 100
     @current_cards = []
     @summ = 0
-    @@cards = Deck.new
     @name = name
   end
 
@@ -14,13 +13,12 @@ class Gamer
     @summ = 0
   end
 
-  def take_cards(x = 2)
-    deck = @@cards.deck
-
+  def take_cards(deck, x = 2)
+    cards = deck.deck
     x.times do
-      random = deck[rand(deck.size)]
+      random = cards[rand(cards.size)]
       @current_cards << random
-      @@cards.remove_card(random)
+      deck.remove_card(random)
     end
 
     summ_card
@@ -34,27 +32,11 @@ class Gamer
   end
 
   def ace_miracle
-    @current_cards.none?(&:ace?) || @summ > 12 ? @summ : @summ + 10
-  end
-
-  def win
-    @bank += 10
-  end
-
-  def lose
-    @bank -= 10
+    @current_cards.none?(&:ace?) || @summ > 12 ? @summ : @summ += 10
   end
 
   def bank_zero?
     @bank.zero?
-  end
-
-  def deck_nil_zero?
-    @@cards.deck.nil? || @@cards.deck.size < 6
-  end
-
-  def renew_deck
-    @@cards = Deck.new if deck_nil_zero?
   end
 
   def names_cards

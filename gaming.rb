@@ -9,6 +9,7 @@ class Gaming
     @view.hello(@name)
     @dealer = Gamer.new('дилер')
     @gamers = [@player, @dealer]
+    @deck = Deck.new
     start
   end
 
@@ -16,8 +17,8 @@ class Gaming
     loop do
       @view.start_view(@name)
       break if gets.chomp.to_i == 2
-      @gamers.each(&:take_cards)
-      @player.renew_deck
+      @gamers.each { |gmr| gmr.take_cards(@deck) }
+      @deck.renew_deck
       menu
     end
   end
@@ -26,7 +27,7 @@ class Gaming
     report_bank
     show_player_cards(@player)
     @view.menu_view(@name)
-    @player.take_cards(1) if gets.chomp.to_i == 2
+    @player.take_cards(@deck, 1) if gets.chomp.to_i == 2
     sleep(1)
     dealer_move
     open_cards
@@ -46,7 +47,7 @@ class Gaming
     sleep(1)
 
     if @dealer.summ < 17
-      @dealer.take_cards(1)
+      @dealer.take_cards(@deck, 1)
       @view.dealer_take_card
     else @view.dealer_pass
     end
@@ -81,11 +82,11 @@ class Gaming
   def move_bank
     case @winner
     when @name
-      @dealer.lose
-      @player.win
+      lose(@dealer)
+      win(@player)
     when 'дилер'
-      @dealer.win
-      @player.lose
+      win(@dealer)
+      lose(@player)
     end
   end
 
@@ -103,5 +104,13 @@ class Gaming
 
   def cur_cards_names(player)
     @view.cur_cards_view(player.names_cards)
+  end
+
+  def win(player)
+    player.bank += 10
+  end
+
+  def lose(player)
+    player.bank -= 10
   end
 end
