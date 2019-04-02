@@ -34,7 +34,7 @@ class Gamer
   end
 
   def ace_miracle
-    @current_cards.none?(&:ace?) || @summ > 11 ? @summ : @summ + 10
+    @current_cards.none?(&:ace?) || @summ > 12 ? @summ : @summ + 10
   end
 
   def win
@@ -55,5 +55,11 @@ class Gamer
 
   def renew_deck
     @@cards = Deck.new if deck_nil_zero?
+  end
+
+  def names_cards
+    cards = []
+    @current_cards.each { |card| cards << card.name }
+    cards
   end
 end
